@@ -3,6 +3,8 @@ const app = express();
 const morgan = require('morgan');
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
+const userRoutes = require('./api/routes/users');
+
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
@@ -42,6 +44,7 @@ app.use((req, res, next) => {
 //routers imported
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/users', userRoutes);
 
 app.use((req, res, next) => {
   const error = new Error('Api Not Found');
