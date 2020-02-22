@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
+const checkAuth = require('../middleware/auth');
 
 //Signup: registration form
 router.post('/signup', (req, res, next) => {
