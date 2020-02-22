@@ -3,18 +3,20 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Order = require('../models/order');
 
-//GET: ALL PRODUCTS
+//GET: ALL ORDERRS
 router.get('/', (req, res, next) => {
   Order.find()
-    .select('prodid quantity')
-    .populate('product')
+    .select('prodid quantity _id orderDateTime')
+    .populate('prodid', 'name price _id')
     .sort({ quantity: 1 })
     .then(items => { 
       res.status(200).json({
-        conut: items.length,
+        count: items.length,
         data: items.map(item => ({
-              id : item._id,
-              quantity : item.quantity,
+              orderId : item._id,
+              orderQuantity : item.quantity,
+              orderDate:item.orderDateTime,
+              product: item.prodid,
               request : {
                 type: "GET",
                 url: "http://localhost:3000/orders/"+item._id
@@ -30,12 +32,12 @@ router.get('/', (req, res, next) => {
     });
 });
 
-//POST: ADD PRODUCT TO MONGODB
+//POST: ADD ORDER TO MONGODB
 router.post('/', (req, res, next) => {
   const order = new Order({
     _id: new mongoose.Types.ObjectId(),
-    quantity: req.body.quantity,
     prodid: req.body.prodid,
+    quantity: req.body.quantity,
     orderDateTime:new Date()
   });
   
@@ -54,31 +56,32 @@ router.post('/', (req, res, next) => {
  
 })
 
-//GET: PRODUCT DETAIL
-router.get('/:prodid', (req, res, next) => {
-  const id = req.params.prodid;
-  if (id === 'new') {
-    res.status(200).json({
-      newmsg: 'get call: for # NEW # order',
-      id:id
+//GET: ORDER DETAIL
+router.get('/:orderid', (req, res, next) => {
+  const id = req.params.orderid;
+  Order.findById(id)
+    .populate('prodid')
+    .then(order => { 
+      res.status(200).json({
+        orderDetail: order,
+        request : {
+          type: "GET",
+          url: "http://localhost:3000/orders"
+        }
+      })  
     })
-  } else { 
-    res.status(200).json({
-      newmsg: 'get call: for # ANY # order',
-      id:id
-    })
-  }
+    .catch()
 })
 
-//PATCH: UPDATED PRODUCT
-router.patch('/:prodid', (req, res, next) => {
+//PATCH: ORDER PRODUCT
+router.patch('/:orderid', (req, res, next) => {
     res.status(200).json({
       newmsg: 'order updated successfully'
     })
 })
 
-//DELETE: PRODUCT DELETE
-router.delete('/:prodid', (req, res, next) => {
+//DELETE: ORDER DELETE
+router.delete('/:orderid', (req, res, next) => {
   res.status(200).json({
     newmsg: 'order deleted successfully'
   })

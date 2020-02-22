@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) { 
+    cb(null, './uploads/');
+  },
+  filename: function (req, file, cb) { 
+    cb(null, file.originalname)
+  }
+});
+
+const upload = multer({storage:storage});
 
 //GET: ALL ORDRES
 router.get('/', (req, res, next) => {
@@ -31,7 +42,8 @@ router.get('/', (req, res, next) => {
 });
 
 //POST: ADD ORDER
-router.post('/', (req, res, next) => {
+router.post('/', upload.single('productImage'), (req, res, next) => {
+  console.log(req.file);
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
@@ -49,7 +61,6 @@ router.post('/', (req, res, next) => {
     .catch(err => { 
       res.status(404).json(err)
     });
-
 })
 
 //GET: ORDER DETAIL
@@ -103,7 +114,6 @@ router.delete('/:prodid', (req, res, next) => {
       })
     })
     .catch()
-  
 })
 
 module.exports = router;
