@@ -1,5 +1,6 @@
 const Order = require('../models/order');
 
+//get controller for order list router
 exports.ordersList = (req, res, next) => {
   Order.find()
     .select('prodid quantity _id orderDateTime')
@@ -28,7 +29,7 @@ exports.ordersList = (req, res, next) => {
     });
 }
 
-
+//post controller for add nwe order
 exports. addOrder= (req, res, next) => {
   const order = new Order({
     _id: new mongoose.Types.ObjectId(),
@@ -52,6 +53,7 @@ exports. addOrder= (req, res, next) => {
  
 }
 
+//get controller for order detail 
 exports.orderDetail = (req, res, next) => {
   const id = req.params.orderid;
   Order.findById(id)
@@ -68,12 +70,14 @@ exports.orderDetail = (req, res, next) => {
     .catch()
 }
 
+//patch controller for update order
 exports.updateOrder= (req, res, next) => {
   res.status(200).json({
     newmsg: 'order updated successfully'
   })
 }
 
+//delete controller for delete order
 exports.deleteOrder = (req, res, next) => {
   res.status(200).json({
     newmsg: 'order deleted successfully'
